@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+*.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build output
+dist/
+build/
+*.egg-info/
+
+# Generated conversion output
+projects/
+
+# OS
+.DS_Store
+Thumbs.db
