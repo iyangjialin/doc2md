@@ -1,3 +1,5 @@
+import sys
+import io
 import typer
 from pathlib import Path
 from typing import Optional
@@ -32,9 +34,9 @@ def convert(
         processor = processor_class(project_id=project_id, ocr_mode=ocr_mode)
         result = processor.process(str(file_path))
 
-        typer.echo(f"✓ Converted: {result.filename}")
-        typer.echo(f"✓ Project: {result.project_id}")
-        typer.echo(f"✓ Assets: {len(result.assets)}")
+        typer.echo(f"[OK] Converted: {result.filename}")
+        typer.echo(f"[OK] Project: {result.project_id}")
+        typer.echo(f"[OK] Assets: {len(result.assets)}")
 
         if result.assets:
             typer.echo("\nAssets extracted:")
@@ -64,7 +66,7 @@ def batch(
     for file in files:
         file_path = Path(file)
         if not file_path.exists():
-            typer.echo(f"✗ Skipping (not found): {file}", err=True)
+            typer.echo(f"[SKIP] Not found: {file}", err=True)
             failed += 1
             continue
 
@@ -72,10 +74,10 @@ def batch(
             processor_class = get_processor(str(file_path))
             processor = processor_class(project_id=project_id, ocr_mode=ocr_mode)
             result = processor.process(str(file_path))
-            typer.echo(f"✓ {result.filename}")
+            typer.echo(f"[OK] {result.filename}")
             success += 1
         except ValueError as e:
-            typer.echo(f"✗ {file}: {e}", err=True)
+            typer.echo(f"[FAIL] {file}: {e}", err=True)
             failed += 1
 
     typer.echo(f"\nDone. {success} succeeded, {failed} failed.")
@@ -106,6 +108,10 @@ def serve(
     """Start the web server."""
     import uvicorn
     from doc2md.api import app
+
+    # Fix Windows GBK encoding issue for emoji/non-ASCII output
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
     typer.echo(f"Starting server at http://{host}:{port}")
     typer.echo(f"API docs at http://{host}:{port}/docs")

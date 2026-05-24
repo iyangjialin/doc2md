@@ -48,7 +48,7 @@ class DocxProcessor(BaseProcessor):
         output_dir = Path(config.PROJECTS_DIR) / self.project_id
         output_dir.mkdir(parents=True, exist_ok=True)
         output_path = output_dir / f"{filename}.md"
-        output_path.write_text(markdown)
+        output_path.write_text(markdown, encoding='utf-8')
 
         return ConversionResult(
             markdown=markdown,

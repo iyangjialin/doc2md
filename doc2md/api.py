@@ -66,7 +66,7 @@ async def list_projects():
 async def get_project(project_id: str):
     project_dir = Path(config.PROJECTS_DIR) / project_id
     if not project_dir.exists():
-        raise HTTPException(status_code=404, message="Project not found")
+        raise HTTPException(status_code=404, detail="Project not found")
 
     files = []
     assets = []
@@ -95,7 +95,7 @@ async def convert(
 ):
     content = await file.read()
     if len(content) > config.MAX_FILE_SIZE_BYTES:
-        raise HTTPException(status_code=413, message=f"File too large. Max size: {config.MAX_FILE_SIZE_MB}MB")
+        raise HTTPException(status_code=413, detail=f"File too large. Max size: {config.MAX_FILE_SIZE_MB}MB")
 
     project_id = generate_project_id()
 
@@ -114,9 +114,9 @@ async def convert(
             "filename": result.filename
         }
     except ValueError as e:
-        raise HTTPException(status_code=400, message=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, message=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         if temp_path.exists():
             temp_path.unlink()
